@@ -5,6 +5,7 @@ import utils.Pair;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class SymbolTable {
@@ -38,6 +39,14 @@ public class SymbolTable {
                     .filter(pair -> pair.getKey().equals(key))
                     .findFirst().orElse(null);
             return symbol != null ? symbol.getValue() : -1;
+        }
+
+        public String toString(){
+            return "[" + chain.stream().map(Pair::toString).collect(Collectors.joining(", ")) + "]";
+        }
+
+        public  boolean isEmpty(){
+            return chain.isEmpty();
         }
 
     }
@@ -131,6 +140,20 @@ public class SymbolTable {
      */
     public int size(){
         return size;
+    }
+
+    public void printTable(){
+        String leftAlignFormat = "| %-15s |%n";
+
+        System.out.format("+-----------------+%n");
+        System.out.format(leftAlignFormat, "Symbol Table");
+        System.out.format("+-----------------+%n");
+        for (Bucket bucket : table) {
+            if (!bucket.isEmpty()) {
+                System.out.format(leftAlignFormat, bucket);
+            }
+        }
+        System.out.format("+-----------------+%n");
     }
 
 }
