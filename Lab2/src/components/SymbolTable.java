@@ -2,6 +2,10 @@ package components;
 
 import utils.Pair;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -42,7 +46,8 @@ public class SymbolTable {
         }
 
         public String toString(){
-            return "[" + chain.stream().map(Pair::toString).collect(Collectors.joining(", ")) + "]";
+            String leftAlignFormat = "| %-15s |%n";
+            return chain.stream().map(pair -> String.format(leftAlignFormat,pair.toString())).collect(Collectors.joining());
         }
 
         public  boolean isEmpty(){
@@ -142,18 +147,30 @@ public class SymbolTable {
         return size;
     }
 
-    public void printTable(){
-        String leftAlignFormat = "| %-15s |%n";
-
-        System.out.format("+-----------------+%n");
-        System.out.format(leftAlignFormat, "Symbol Table");
-        System.out.format("+-----------------+%n");
-        for (Bucket bucket : table) {
-            if (!bucket.isEmpty()) {
-                System.out.format(leftAlignFormat, bucket);
-            }
+    public void writeToFile(String stPath) {
+        try {
+            File file = new File(stPath);
+            FileWriter writer = new FileWriter(file, false);
+            BufferedWriter bufferedWriter = new BufferedWriter(writer);
+            bufferedWriter.write(this.toString());
+            bufferedWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        System.out.format("+-----------------+%n");
+    }
+
+    @Override
+    public String toString(){
+        String leftAlignFormat = "| %-15s |%n";
+        StringBuilder symTable = new StringBuilder();
+        symTable.append("+-----------------+\n");
+        symTable.append(String.format(leftAlignFormat, "Symbol Table"));
+        symTable.append("+-----------------+\n");
+        for (Bucket bucket : table) {
+            symTable.append(bucket);
+        }
+        symTable.append("+-----------------+\n");
+        return symTable.toString();
     }
 
 }
