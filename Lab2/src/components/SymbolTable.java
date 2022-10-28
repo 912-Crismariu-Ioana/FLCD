@@ -1,6 +1,8 @@
 package components;
 
 import utils.Pair;
+import utils.tableformatter.SimpleTableFormatter;
+import utils.tableformatter.TableFormatter;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -9,7 +11,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 public class SymbolTable {
@@ -45,13 +46,12 @@ public class SymbolTable {
             return symbol != null ? symbol.getValue() : -1;
         }
 
-        public String toString(){
-            String leftAlignFormat = "| %-15s |%n";
-            return chain.stream().map(pair -> String.format(leftAlignFormat,pair.toString())).collect(Collectors.joining());
-        }
-
         public  boolean isEmpty(){
             return chain.isEmpty();
+        }
+
+        public List<Pair<String, Integer>> getChain() {
+            return chain;
         }
 
     }
@@ -161,16 +161,30 @@ public class SymbolTable {
 
     @Override
     public String toString(){
-        String leftAlignFormat = "| %-15s |%n";
-        StringBuilder symTable = new StringBuilder();
-        symTable.append("+-----------------+\n");
-        symTable.append(String.format(leftAlignFormat, "Symbol Table"));
-        symTable.append("+-----------------+\n");
-        for (Bucket bucket : table) {
-            symTable.append(bucket);
+        TableFormatter tf = new SimpleTableFormatter(true)
+                .nextRow()
+                    .nextCell()
+                        .addLine("Symbol Table")
+                .nextRow()
+                    .nextCell()
+                        .addLine("Symbol")
+                    .nextCell()
+                        .addLine("ID");
+        for(Bucket bucket : table){
+            for(Pair<String, Integer> symbol : bucket.getChain()){
+                tf.nextRow()
+                        .nextCell()
+                        .addLine(symbol.getKey())
+                        .nextCell()
+                        .addLine(String.valueOf(symbol.getValue()));
+            }
         }
-        symTable.append("+-----------------+\n");
-        return symTable.toString();
+        String[] table = tf.getFormattedTable();
+        StringBuilder result = new StringBuilder();
+        for (int i = 0, size = table.length; i < size; i++) {
+            result.append(table[i]).append("\n");
+        }
+        return result.toString();
     }
 
 }
