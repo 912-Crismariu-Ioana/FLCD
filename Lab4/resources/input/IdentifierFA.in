@@ -1,0 +1,142 @@
+@alphabet
+$ _
+A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+a b c d e f g h i j k l m n o p q r s t u v w x y z
+0 1 2 3 4 5 6 7 8 9
+
+@initialState
+S
+
+@states
+S
+C
+F final
+
+@transitions
+S $ C
+C A F
+C B F
+C C F
+C D F
+C E F
+C F F
+C G F
+C H F
+C I F
+C J F
+C K F
+C L F
+C M F
+C N F
+C O F
+C P F
+C Q F
+C R F
+C S F
+C T F
+C U F
+C V F
+C W F
+C X F
+C Y F
+C Z F
+C _ F
+C a F
+C b F
+C c F
+C d F
+C e F
+C f F
+C g F
+C h F
+C i F
+C j F
+C k F
+C l F
+C m F
+C n F
+C o F
+C p F
+C q F
+C r F
+C s F
+C t F
+C u F
+C v F
+C w F
+C x F
+C y F
+C z F
+C 0 F
+C 1 F
+C 2 F
+C 3 F
+C 4 F
+C 5 F
+C 6 F
+C 7 F
+C 8 F
+C 9 F
+F A F
+F B F
+F C F
+F D F
+F E F
+F F F
+F G F
+F H F
+F I F
+F J F
+F K F
+F L F
+F M F
+F N F
+F O F
+F P F
+F Q F
+F R F
+F S F
+F T F
+F U F
+F V F
+F W F
+F X F
+F Y F
+F Z F
+F _ F
+F a F
+F b F
+F c F
+F d F
+F e F
+F f F
+F g F
+F h F
+F i F
+F j F
+F k F
+F l F
+F m F
+F n F
+F o F
+F p F
+F q F
+F r F
+F s F
+F t F
+F u F
+F v F
+F w F
+F x F
+F y F
+F z F
+F 0 F
+F 1 F
+F 2 F
+F 3 F
+F 4 F
+F 5 F
+F 6 F
+F 7 F
+F 8 F
+F 9 F

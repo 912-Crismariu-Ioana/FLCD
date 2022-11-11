@@ -1,0 +1,19 @@
+# Compute the gcd of 2 numbers
+
+my $n1:int, $n2:int, $rem:int;
+$n1 = stdin();
+$n2 = stdin();
+if($n1 == 0) { 
+    print($n2);
+}
+else if($n2 == 0) {
+      print($n1);
+}
+else {
+    while ($n2 != 0) do {
+            $rem = $n1 % $n2;
+            $n1 = $n2;
+            $n2 = $rem;
+    };
+    print($n1);
+};
