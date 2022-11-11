@@ -92,6 +92,10 @@ public class FiniteAutomaton {
                 if(tokens[1].equals("final")){
                     finalStates.add(tokens[0].strip());
                 }
+
+                if(tokens[1].equals("initial")){
+                    initialState = tokens[0].strip();
+                }
             }
         }
     }
@@ -124,10 +128,6 @@ public class FiniteAutomaton {
                 String line = reader.nextLine().strip();
                 if(line.startsWith("@alphabet")){
                     readAlphabet(reader);
-                }
-
-                if(line.startsWith("@initialState")){
-                    initialState = reader.nextLine().strip();
                 }
 
                 if(line.startsWith("@states")){

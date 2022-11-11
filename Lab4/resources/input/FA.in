@@ -1,11 +1,8 @@
 @alphabet
 0 1
 
-@initialState
-p
-
 @states
-p
+p initial
 q
 r
 s final
