@@ -98,11 +98,17 @@ public class Grammar {
         return sb.toString();
     }
 
+    /**
+     * checks if the grammar loaded from the file is context free
+     * @return true if the grammar is context free and false otherwise
+     */
     public boolean isCFG(){
+        // check if the starting symbol is in the set of non-terminals
         if(!nonTerminals.contains(startingSymbol)){
             return false;
         }
 
+        // check if the starting symbol is the LHS of at least one of the productions
         if(!productions.stream()
                 .map(Production::getLHS)
                 .flatMap(Collection::stream)
@@ -110,16 +116,23 @@ public class Grammar {
             return false;
         }
 
+        // we loop through each of the production
         for(Production production : productions){
             List<String> lhs = production.getLHS();
             Set<List<String>> rhs = production.getRHS();
+
+            // LHS contains more than one non-terminal, the grammar is not context-free
             if(lhs.size() > 1)
                 return false;
+
+            // all symbols from the LHS of the productions are contained in the set of non-terminals
             else if(!nonTerminals.containsAll(lhs))
                 return false;
 
             for(List<String> rh : rhs) {
                 for (String symb : rh) {
+
+                    // the symbols from the RHS are either terminals, non-terminals or epsilon (the empty word)
                     if(!(nonTerminals.contains(symb) || terminals.contains(symb) || symb.equals("epsilon")))
                         return false;
                 }

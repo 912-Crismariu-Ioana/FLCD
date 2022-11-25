@@ -1,0 +1,11 @@
+@nonTerminals
+S
+
+@terminals
+a b c
+
+@productions
+S -> a S b S | a S | c
+
+@startingSymbol
+S
