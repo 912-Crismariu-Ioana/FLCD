@@ -106,11 +106,23 @@ public class Classifier {
         return identifierFa.isSequenceAccepted(token);
     }
 
-    public boolean isConstant(String token) {
+    public boolean isIntConstant(String token) {
+        return intFA.isSequenceAccepted(token);
+    }
+
+    public boolean isCharConstant(String token){
         String charRegex = "^'[a-zA-Z0-9_ ]?'$";
+        return token.matches(charRegex);
+
+    }
+
+    public boolean isStringConstant(String token){
         String stringRegex = "^\"[a-zA-Z0-9_ ]*\"$";
-        return intFA.isSequenceAccepted(token) || token.matches(charRegex) ||
-                token.matches(stringRegex);
+        return token.matches(stringRegex);
+    }
+
+    public boolean isConstant(String token){
+        return isStringConstant(token) || isCharConstant(token) || isIntConstant(token);
     }
 
 }

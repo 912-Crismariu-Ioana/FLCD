@@ -87,7 +87,7 @@ public class SymbolTable {
             hashKey += asciiCode;
             pow--;
         }
-        return hashKey % this.table.size();
+        return Math.abs(hashKey) % this.table.size();
     }
 
     /** Adds a new entry with the given key to the symbol table

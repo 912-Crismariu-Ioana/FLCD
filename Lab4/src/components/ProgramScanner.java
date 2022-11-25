@@ -40,10 +40,16 @@ public class ProgramScanner {
      */
     private String codify(String token){
         if(classifier.isIdentifier(token)){
-            return "id";
+            return "identifier";
         }
-        if(classifier.isConstant(token)){
-            return "const";
+        if(classifier.isIntConstant(token)){
+            return "int_ct";
+        }
+        if(classifier.isCharConstant(token)){
+            return "char_ct";
+        }
+        if(classifier.isStringConstant(token)){
+            return "string_ct";
         }
         return token;
     }

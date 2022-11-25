@@ -13,5 +13,5 @@ if ($n3 > $max) {
     $max = $n3;
 };
 # String constant cannot contain an identifier mark (the sigil)
-print("The max number $is:");
+print("The max number is $n1");
 print($max);
