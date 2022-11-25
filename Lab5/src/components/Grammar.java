@@ -98,6 +98,10 @@ public class Grammar {
         return sb.toString();
     }
 
+    /**
+     * The function returns true if the grammar is context free and false otherwise
+     * @return true if the grammar is context free and false otherwise
+     */
     public boolean isCFG(){
         if(!nonTerminals.contains(startingSymbol)){
             return false;
