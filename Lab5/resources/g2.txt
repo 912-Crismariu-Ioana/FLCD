@@ -33,6 +33,3 @@ relation -> < | <= | == | != | >= | >
 
 @startingSymbol
 program
-
-
-cmp_stmt in_stmt -> condition relation
