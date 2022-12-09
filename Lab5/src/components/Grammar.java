@@ -141,4 +141,35 @@ public class Grammar {
         return true;
     }
 
+    public Set<String> getNonTerminals() {
+        return nonTerminals;
+    }
+
+    public void setNonTerminals(Set<String> nonTerminals) {
+        this.nonTerminals = nonTerminals;
+    }
+
+    public Set<String> getTerminals() {
+        return terminals;
+    }
+
+    public void setTerminals(Set<String> terminals) {
+        this.terminals = terminals;
+    }
+
+    public String getStartingSymbol() {
+        return startingSymbol;
+    }
+
+    public void setStartingSymbol(String startingSymbol) {
+        this.startingSymbol = startingSymbol;
+    }
+
+    public Set<Production> getProductions() {
+        return productions;
+    }
+
+    public void setProductions(Set<Production> productions) {
+        this.productions = productions;
+    }
 }
