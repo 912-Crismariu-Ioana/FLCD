@@ -12,7 +12,7 @@ public class Main {
         System.out.println(grammar.terminalsToString());
         System.out.println(grammar.productionsToString());
         System.out.println("Productions for the non-terminal 'constant':");
-        System.out.println(grammar.printProductionsForNonTerminal("constant"));
+        System.out.println(grammar.getProductionsForNonTerminal("constant"));
         if(grammar.isCFG()){
             System.out.println("The grammar is context-free.");
         }

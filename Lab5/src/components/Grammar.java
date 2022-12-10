@@ -91,11 +91,10 @@ public class Grammar {
         return sb.toString();
     }
 
-    public String printProductionsForNonTerminal(String nonTerminal){
-        StringBuilder sb = new StringBuilder();
-        productions.stream().filter(production -> production.isSymbolInLHS(nonTerminal))
-                .forEach(production -> sb.append(production).append("\n"));
-        return sb.toString();
+    public Set<Production> getProductionsForNonTerminal(String nonTerminal){
+        return productions.stream()
+                .filter(production -> production.isSymbolInLHS(nonTerminal))
+                .collect(Collectors.toSet());
     }
 
     /**
