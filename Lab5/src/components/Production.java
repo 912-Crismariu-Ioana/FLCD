@@ -7,7 +7,7 @@ import java.util.Set;
 
 public class Production {
     private List<String> LHS = new ArrayList<>();
-    private Set<List<String>> RHS = new HashSet<>();
+    private List<List<String>> RHS = new ArrayList<>();
 
 
     public List<String> getLHS() {
@@ -18,11 +18,11 @@ public class Production {
         this.LHS = LHS;
     }
 
-    public Set<List<String>> getRHS() {
+    public List<List<String>> getRHS() {
         return RHS;
     }
 
-    public void setRHS(Set<List<String>> RHS) {
+    public void setRHS(List<List<String>> RHS) {
         this.RHS = RHS;
     }
 
@@ -50,7 +50,7 @@ public class Production {
 
         Production otherProd = (Production) another;
 
-        if(!LHS.equals(((Production) another).getLHS())){
+        if(!LHS.equals(otherProd.getLHS())){
             return false;
         }
 

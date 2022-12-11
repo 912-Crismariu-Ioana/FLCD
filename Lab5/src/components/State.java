@@ -6,7 +6,7 @@ import java.util.Objects;
 import java.util.Set;
 
 public class State {
-    private Set<Item> items;
+    private final Set<Item> items;
 
     public State(Set<Item> items) {
         this.items = items;
@@ -29,20 +29,29 @@ public class State {
         return ActionType.ERROR;
     }
 
-    List<String> getSymbolsAfterTheDot(){
-        ArrayList<String> symbols = new ArrayList<>();
-        for (Item item : items)
-            if(item.getDotPosition() < item.getRhs().size())
-                symbols.add(item.getRhs().get(item.getDotPosition()));
-        return symbols;
+    @Override
+    public boolean equals(Object another){
+        if (another == this) {
+            return true;
+        }
+
+        if (!(another instanceof State)) {
+            return false;
+        }
+
+        State otherState = (State) another;
+
+        return items.size() == otherState.items.size() && otherState.items.containsAll(items);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return this.toString().hashCode();
     }
 
     public Set<Item> getItems() {
         return items;
-    }
-
-    public void setItems(Set<Item> items) {
-        this.items = items;
     }
 
     @Override
