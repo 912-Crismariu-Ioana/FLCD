@@ -6,10 +6,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Grammar {
-    private Set<String> nonTerminals = new HashSet<>();
-    private Set<String> terminals = new HashSet<>();
+    private final Set<String> nonTerminals = new HashSet<>();
+    private final Set<String> terminals = new HashSet<>();
     private String startingSymbol;
-    private Set<Production> productions = new HashSet<>();
+    private final Set<Production> productions = new HashSet<>();
 
     public Grammar(String filename){
         readGrammarFromFile(filename);
@@ -17,7 +17,7 @@ public class Grammar {
 
     private void readGrammarFromFile(String filename){
         File file = new File(filename);
-        Scanner reader = null;
+        Scanner reader;
         try {
             reader = new Scanner(file);
             while (reader.hasNextLine()) {
@@ -44,12 +44,12 @@ public class Grammar {
 
                         String[] tokens = line.split("->");
                         List<String> lhs = Arrays.asList(tokens[0].strip().split(" "));
-                        Set<List<String>> rhs = Arrays.stream(tokens[1].strip().split("\\|")).map(
+                        List<List<String>> rhs = Arrays.stream(tokens[1].strip().split("\\|")).map(
                                 r -> {
                                     r = r.strip();
                                     return Arrays.asList(r.split(" "));
                                 }
-                        ).collect(Collectors.toSet());
+                        ).collect(Collectors.toList());
                         Production production = new Production();
                         production.setLHS(lhs);
                         production.setRHS(rhs);
@@ -91,11 +91,10 @@ public class Grammar {
         return sb.toString();
     }
 
-    public String printProductionsForNonTerminal(String nonTerminal){
-        StringBuilder sb = new StringBuilder();
-        productions.stream().filter(production -> production.isSymbolInLHS(nonTerminal))
-                .forEach(production -> sb.append(production).append("\n"));
-        return sb.toString();
+    public Set<Production> getProductionsForNonTerminal(String nonTerminal){
+        return productions.stream()
+                .filter(production -> production.isSymbolInLHS(nonTerminal))
+                .collect(Collectors.toSet());
     }
 
     /**
@@ -119,7 +118,7 @@ public class Grammar {
         // we loop through each of the production
         for(Production production : productions){
             List<String> lhs = production.getLHS();
-            Set<List<String>> rhs = production.getRHS();
+            List<List<String>> rhs = production.getRHS();
 
             // LHS contains more than one non-terminal, the grammar is not context-free
             if(lhs.size() > 1)
@@ -141,4 +140,19 @@ public class Grammar {
         return true;
     }
 
+    public Set<String> getNonTerminals() {
+        return nonTerminals;
+    }
+
+    public Set<String> getTerminals() {
+        return terminals;
+    }
+
+    public String getStartingSymbol() {
+        return startingSymbol;
+    }
+
+    public Set<Production> getProductions() {
+        return productions;
+    }
 }

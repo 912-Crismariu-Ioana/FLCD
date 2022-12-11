@@ -1,4 +1,5 @@
 import components.Grammar;
+import components.LRZero;
 import components.Production;
 
 import java.util.HashSet;
@@ -11,13 +12,15 @@ public class Main {
         System.out.println(grammar.nonTerminalsToString());
         System.out.println(grammar.terminalsToString());
         System.out.println(grammar.productionsToString());
-        System.out.println("Productions for the non-terminal 'constant':");
-        System.out.println(grammar.printProductionsForNonTerminal("constant"));
+        System.out.println("Productions for the non-terminal 'A':");
+        System.out.println(grammar.getProductionsForNonTerminal("A"));
         if(grammar.isCFG()){
             System.out.println("The grammar is context-free.");
         }
         else{
             System.out.println("The grammar is not context-free.");
         }
+        LRZero lrZero = new LRZero(grammar);
+        lrZero.parse();
     }
 }
