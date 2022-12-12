@@ -1,18 +1,21 @@
-package components;
+package components.parser;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 public class State {
+    private int index = -1;
+
     private final Set<Item> items;
+
+    private final Map<String, Integer> reachableStates = new HashMap<>();
 
     public State(Set<Item> items) {
         this.items = items;
     }
 
-    public ActionType getNextActionType(){
+    public ActionType getNextAction(){
         if(items.stream().filter(item->item.getLhs().equals("S'") &&
            item.getDotPosition() == item.getRhs().size()).count() == 1){
             return ActionType.ACCEPT;
@@ -56,6 +59,22 @@ public class State {
 
     @Override
     public String toString() {
-        return "State{" + items + '}';
+        return "State " + index + " {" + items + '}';
+    }
+
+    public void addReachableState(String symbol, Integer stateIndex){
+        reachableStates.put(symbol, stateIndex);
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    public Map<String, Integer> getReachableStates() {
+        return reachableStates;
     }
 }

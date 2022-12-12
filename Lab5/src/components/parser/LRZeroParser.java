@@ -1,14 +1,19 @@
-package components;
+package components.parser;
+
+import components.grammar.Grammar;
+import components.grammar.Production;
+import components.parser.table.Table;
+import components.parser.table.TableRow;
 
 import java.util.*;
 
-public class LRZero {
+public class LRZeroParser {
     private final Grammar grammar;
     private final List<Production> enrichedProductions = new ArrayList<>();
 
-    public LRZero(Grammar grammar) {
+    public LRZeroParser(Grammar grammar) {
         this.grammar = grammar;
-        Set<Production> productions = grammar.getProductions();
+        List<Production> productions = grammar.getProductions();
 
         Production enrichedGrammarProduction = new Production();
         List<String> lhs = List.of("S'");
@@ -65,29 +70,37 @@ public class LRZero {
         return new State(result);
     }
 
-    private Map<Integer,State> getCanonicalCollection(){
-        Integer index = 0;
-        Map<Integer, State> canonicalCollection = new HashMap<>();
+    private List<State> getCanonicalCollection(){
+        int index = 0;
+        List<State> canonicalCollection = new ArrayList<>();
         Item firstItem = new Item("S'",
                 List.of(grammar.getStartingSymbol()),
                 0
         );
-        canonicalCollection.put(index, closure(firstItem));
+        State firstState = closure(firstItem);
+        firstState.setIndex(index);
+        canonicalCollection.add(firstState);
         index++;
         Set<String> symbols = new HashSet<>();
         symbols.addAll(grammar.getNonTerminals());
         symbols.addAll(grammar.getTerminals());
         boolean changed = true;
-        while(changed){
+        while(changed) {
             changed = false;
-            Set<State> states = new HashSet<>(canonicalCollection.values());
-            for(State state: states){
-                for(String symbol: symbols){
+            List<State> states = new ArrayList<>(canonicalCollection);
+            for (State state : states) {
+                for (String symbol : symbols) {
                     State newState = goTo(state, symbol);
-                    if(newState.getItems().size() > 0 && !canonicalCollection.containsValue(newState)){
-                        canonicalCollection.put(index, newState);
-                        index++;
-                        changed = true;
+                    if (newState.getItems().size() > 0) {
+                        if (!canonicalCollection.contains(newState)) {
+                            newState.setIndex(index);
+                            canonicalCollection.add(newState);
+                            index++;
+                            changed = true;
+                        } else if(canonicalCollection.contains(newState)){
+                            int stateIndex = canonicalCollection.indexOf(newState);
+                            state.addReachableState(symbol, stateIndex);
+                        }
                     }
                 }
             }
@@ -95,8 +108,27 @@ public class LRZero {
         return canonicalCollection;
     }
 
+    public Table getParsingTable(){
+        List<State> canonicalCollection = getCanonicalCollection();
+        System.out.println(canonicalCollection);
+        List<TableRow> table = new ArrayList<>();
+        Set<String> symbols = new HashSet<>();
+        symbols.addAll(grammar.getNonTerminals());
+        symbols.addAll(grammar.getTerminals());
+        for (State state : canonicalCollection) {
+            ActionType actionType = state.getNextAction();
+            Map<String, Integer> goTo = new HashMap<>();
+            symbols.forEach(symbol -> goTo.put(symbol, -1));
+            goTo.putAll(state.getReachableStates());
+            TableRow tableRow = new TableRow(actionType, goTo);
+            tableRow.setStateIndex(state.getIndex());
+            table.add(tableRow);
+        }
+        return new Table(symbols, table);
+    }
+
     public void parse(){
-        System.out.println(getCanonicalCollection());
+        System.out.println(getParsingTable());
     }
 
 }

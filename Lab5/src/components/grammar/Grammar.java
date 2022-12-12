@@ -1,4 +1,4 @@
-package components;
+package components.grammar;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -9,7 +9,7 @@ public class Grammar {
     private final Set<String> nonTerminals = new HashSet<>();
     private final Set<String> terminals = new HashSet<>();
     private String startingSymbol;
-    private final Set<Production> productions = new HashSet<>();
+    private final List<Production> productions = new ArrayList<>();
 
     public Grammar(String filename){
         readGrammarFromFile(filename);
@@ -53,7 +53,9 @@ public class Grammar {
                         Production production = new Production();
                         production.setLHS(lhs);
                         production.setRHS(rhs);
-                        productions.add(production);
+                        if(!productions.contains(production)){
+                            productions.add(production);
+                        }
                     }
                 }
 
@@ -152,7 +154,7 @@ public class Grammar {
         return startingSymbol;
     }
 
-    public Set<Production> getProductions() {
+    public List<Production> getProductions() {
         return productions;
     }
 }

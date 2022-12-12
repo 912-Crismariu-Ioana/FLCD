@@ -1,4 +1,4 @@
-package components;
+package components.parser.tree;
 
 public class Node {
     private Node father;

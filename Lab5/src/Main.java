@@ -1,14 +1,9 @@
-import components.Grammar;
-import components.LRZero;
-import components.Production;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import components.grammar.Grammar;
+import components.parser.LRZeroParser;
 
 public class Main {
     public static void main(String[] args) {
-        Grammar grammar = new Grammar("resources/g2.txt");
+        Grammar grammar = new Grammar("resources/g1.txt");
         System.out.println(grammar.nonTerminalsToString());
         System.out.println(grammar.terminalsToString());
         System.out.println(grammar.productionsToString());
@@ -20,7 +15,7 @@ public class Main {
         else{
             System.out.println("The grammar is not context-free.");
         }
-        LRZero lrZero = new LRZero(grammar);
+        LRZeroParser lrZero = new LRZeroParser(grammar);
         lrZero.parse();
     }
 }

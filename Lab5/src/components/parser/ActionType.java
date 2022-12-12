@@ -1,4 +1,4 @@
-package components;
+package components.parser;
 
 public enum ActionType {
     REDUCE,
