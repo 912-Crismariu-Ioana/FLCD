@@ -8,6 +8,8 @@ public class TableRow {
     private final ActionType action;
     private final Map<String, Integer> goTo;
     private int stateIndex = -1;
+    private int productionIndexInList = -1;
+
 
     public TableRow(ActionType action, Map<String, Integer> goTo) {
         this.action = action;
@@ -28,5 +30,13 @@ public class TableRow {
 
     public int getStateIndex() {
         return stateIndex;
+    }
+
+    public int getProductionIndexInList() {
+        return productionIndexInList;
+    }
+
+    public void setProductionIndexInList(int productionIndexInList) {
+        this.productionIndexInList = productionIndexInList;
     }
 }

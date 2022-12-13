@@ -1,8 +1,11 @@
 package components.parser.tree;
 
+import java.util.List;
+
 public class ParseTree {
-    private Node root;
-    public ParseTree(Node root){
-        this.root = root;
+    private List<Node> nodes;
+
+    public ParseTree(List<Node> nodes) {
+        this.nodes = nodes;
     }
 }

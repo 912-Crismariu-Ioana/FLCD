@@ -1,11 +1,15 @@
 package components.grammar;
 
+import components.utils.Pair;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Production {
     private List<String> LHS = new ArrayList<>();
-    private List<List<String>> RHS = new ArrayList<>();
+    private Map<Integer, List<String>> RHS = new HashMap<>();
 
 
     public List<String> getLHS() {
@@ -16,11 +20,11 @@ public class Production {
         this.LHS = LHS;
     }
 
-    public List<List<String>> getRHS() {
+    public Map<Integer, List<String>> getRHS() {
         return RHS;
     }
 
-    public void setRHS(List<List<String>> RHS) {
+    public void setRHS(Map<Integer, List<String>> RHS) {
         this.RHS = RHS;
     }
 
@@ -28,10 +32,11 @@ public class Production {
         return LHS.contains(symbol);
     }
 
+
     @Override
     public String toString(){
-        return String.join("",LHS) + " -> " + RHS.stream()
-                .map(r -> String.join(" ", r))
+        return  String.join("",LHS) + " -> " + RHS.values().stream()
+                .map(strings -> String.join(" ", strings) + "(" + strings + ")")
                 .reduce((partialString, element) -> partialString + " | " + element)
                 .orElse("epsilon");
     }
@@ -52,7 +57,7 @@ public class Production {
             return false;
         }
 
-        return RHS.size() == otherProd.RHS.size() && otherProd.RHS.containsAll(RHS);
+        return RHS.size() == otherProd.RHS.size() && otherProd.RHS.entrySet().containsAll(RHS.entrySet());
     }
 
     @Override

@@ -38,11 +38,9 @@ public class State {
             return true;
         }
 
-        if (!(another instanceof State)) {
+        if (!(another instanceof State otherState)) {
             return false;
         }
-
-        State otherState = (State) another;
 
         return items.size() == otherState.items.size() && otherState.items.containsAll(items);
     }

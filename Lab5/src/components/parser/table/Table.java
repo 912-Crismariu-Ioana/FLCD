@@ -1,5 +1,7 @@
 package components.parser.table;
 
+import components.parser.ActionType;
+
 import java.util.List;
 import java.util.Set;
 
@@ -11,6 +13,10 @@ public class Table {
     public Table(Set<String> header, List<TableRow> tableRows) {
         this.headerSymbols = header;
         this.tableRows = tableRows;
+    }
+
+    public List<TableRow> getTableRows() {
+        return tableRows;
     }
 
     @Override
@@ -28,8 +34,15 @@ public class Table {
         tableRows.forEach(tableRow ->
                 {
                     sb.append(String.format(leftAlignFormatNumber, tableRow.getStateIndex()));
-                    sb.append(String.format(leftAlignFormatText, tableRow.getAction()));
-                    tableRow.getGoTo().forEach((k, v)-> sb.append(String.format(leftAlignFormatText, v)));
+                    String action = tableRow.getAction().equals(ActionType.REDUCE) ? tableRow.getAction()
+                            + " " + tableRow.getProductionIndexInList() : tableRow.getAction().toString();
+                    sb.append(String.format(leftAlignFormatText, action));
+                    tableRow.getGoTo().forEach((k, v)->
+                            {
+                                String val = v == -1 ? "err" : v.toString();
+                                sb.append(String.format(leftAlignFormatText, val));
+                            }
+                    );
                     sb.append("\n");
                 }
         );

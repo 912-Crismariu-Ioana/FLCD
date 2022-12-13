@@ -6,8 +6,7 @@ a b c
 
 @productions
 S -> a A
-A -> b A
-A -> c
+A -> b A | c
 
 @startingSymbol
 S

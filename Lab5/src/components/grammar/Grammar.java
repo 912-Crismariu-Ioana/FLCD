@@ -1,5 +1,7 @@
 package components.grammar;
 
+import components.utils.Pair;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
@@ -34,7 +36,7 @@ public class Grammar {
                 }
 
                 if(line.startsWith("@productions")){
-
+                    int index = 1;
                     while(reader.hasNextLine()){
                         line = reader.nextLine().strip();
 
@@ -44,15 +46,20 @@ public class Grammar {
 
                         String[] tokens = line.split("->");
                         List<String> lhs = Arrays.asList(tokens[0].strip().split(" "));
-                        List<List<String>> rhs = Arrays.stream(tokens[1].strip().split("\\|")).map(
+                        List<List<String>>rhs = Arrays.stream(tokens[1].strip().split("\\|")).map(
                                 r -> {
                                     r = r.strip();
                                     return Arrays.asList(r.split(" "));
                                 }
-                        ).collect(Collectors.toList());
+                        ).toList();
+                        Map<Integer, List<String>> rightHandSide = new HashMap<>();
+                        for (List<String> rh : rhs) {
+                            rightHandSide.put(index, rh);
+                            index++;
+                        }
                         Production production = new Production();
                         production.setLHS(lhs);
-                        production.setRHS(rhs);
+                        production.setRHS(rightHandSide);
                         if(!productions.contains(production)){
                             productions.add(production);
                         }
@@ -120,7 +127,7 @@ public class Grammar {
         // we loop through each of the production
         for(Production production : productions){
             List<String> lhs = production.getLHS();
-            List<List<String>> rhs = production.getRHS();
+            Map<Integer, List<String>> rhs = production.getRHS();
 
             // LHS contains more than one non-terminal, the grammar is not context-free
             if(lhs.size() > 1)
@@ -130,7 +137,7 @@ public class Grammar {
             else if(!nonTerminals.containsAll(lhs))
                 return false;
 
-            for(List<String> rh : rhs) {
+            for(List<String> rh : rhs.values()) {
                 for (String symb : rh) {
 
                     // the symbols from the RHS are either terminals, non-terminals or epsilon (the empty word)
