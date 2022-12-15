@@ -1,8 +1,9 @@
 # Compute the gcd of 2 numbers
 
+BEGIN
 my $n1:int, $n2:int, $rem:int;
-$n1 = stdin();
-$n2 = stdin();
+stdin($n1);
+stdin($n2);
 if($n1 == 0) { 
     print($n2);
 }
@@ -17,3 +18,4 @@ else {
     };
     print($n1);
 };
+END

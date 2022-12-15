@@ -3,11 +3,11 @@
 # Variable declarations start with the keyword "my"
 
 # Variable identifiers are always preceded by a sigil
-
+BEGIN
 my $n1:int, $n2:int, $n3:int, $max:int;
-$n1 = stdin();
-$n2 = stdin();
-$n3 = stdin();
+stdin($n1);
+stdin($n2);
+stdin($n3);
 $max = $n1;
 if ($n2 > $max) {
     $max = $n2;
@@ -16,3 +16,4 @@ if ($n3 > $max) {
     $max = $n3;
 };
 print($max);
+END

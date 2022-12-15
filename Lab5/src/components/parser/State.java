@@ -1,8 +1,7 @@
 package components.parser;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class State {
     private int index = -1;
@@ -16,20 +15,36 @@ public class State {
     }
 
     public ActionType getNextAction(){
+        ActionType actionType = ActionType.ERROR;
+
+
         if(items.stream().filter(item->item.getLhs().equals("S'") &&
            item.getDotPosition() == item.getRhs().size()).count() == 1){
             return ActionType.ACCEPT;
         }
 
-        if(items.stream().anyMatch(item -> item.getDotPosition() == item.getRhs().size())){
-            return ActionType.REDUCE;
+        Item triggerItemShift = items.stream().filter(item -> item.getDotPosition() < item.getRhs().size()).findFirst().orElse(null);
+
+        if(triggerItemShift != null){
+             actionType = ActionType.SHIFT;
         }
 
-        if(items.stream().anyMatch(item -> item.getDotPosition() < item.getRhs().size())){
-            return ActionType.SHIFT;
+        List<Item> triggerItemsReduce = items.stream().filter(item -> item.getDotPosition() == item.getRhs().size()).collect(Collectors.toList());
+
+        if(triggerItemsReduce.size() > 0){
+            actionType = ActionType.REDUCE;
         }
 
-        return ActionType.ERROR;
+        if(triggerItemShift != null && triggerItemsReduce.size() > 0){
+            String commonLHS = triggerItemShift.getLhs();
+            for(Item item: triggerItemsReduce){
+                if(item.getLhs().equals(commonLHS)){
+                    return ActionType.SHIFT;
+                }
+            }
+        }
+
+        return actionType;
     }
 
     @Override
@@ -38,9 +53,11 @@ public class State {
             return true;
         }
 
-        if (!(another instanceof State otherState)) {
+        if (!(another instanceof State)) {
             return false;
         }
+
+        State otherState = (State) another;
 
         return items.size() == otherState.items.size() && otherState.items.containsAll(items);
     }

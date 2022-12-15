@@ -1,34 +1,33 @@
 @nonTerminals
-program stmtlist stmt simple_stmt decl_stmt arr_type nz_digit type decl_list expression int_exp operation string_exp char_exp assignment iostmt in_stmt out_stmt constant struct_stmt cmp_stmt if_stmt while_stmt condition relation
+program stmtlist stmt simple_stmt decl_stmt arr_type type decl_list int_exp operation string_exp char_exp assignment iostmt in_stmt out_stmt constant struct_stmt cmp_stmt if_stmt while_stmt condition relation stmt_block
 
 @terminals
-; my arr [ ] int char string : , ( ) + - * / % = stdin print { } if else while do < <= != == >= > string_ct char_ct int_ct identifier 1 2 3 4 5 6 7 8 9
+BEGIN . ; my arr [ ] int char string : , ( ) + - * / % = stdin print { } if else while do < <= != == >= > string_ct char_ct int_ct identifier 1 2 3 4 5 6 7 8 9 END
 
 @productions
-program -> stmtlist
-stmtlist -> stmt | stmt stmtlist
-stmt -> simple_stmt ; | struct_stmt ;
+program -> BEGIN stmtlist
+stmtlist -> stmt END| stmt stmtlist
+stmt -> simple_stmt | struct_stmt
 simple_stmt -> decl_stmt | assignment | iostmt
 decl_stmt -> my decl_list
-arr_type -> arr [ nz_digit ]
-nz_digit -> 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+decl_list -> identifier : type ; | identifier : type , decl_list
+arr_type -> arr [ int_ct ]
 type -> int | char | string | arr_type
-decl_list -> identifier : type | identifier : type , decl_list
-expression -> int_exp | char_exp | string_exp
 int_exp -> int_ct | identifier | int_exp operation int_exp | ( int_exp operation int_exp )
 operation -> + | - | * | / | %
-string_exp -> string_ct | identifier | string_exp + string_exp
+string_exp -> string_ct ; | identifier ; | string_ct . string_exp
 char_exp -> char_ct | identifier
-assignment -> identifier = expression
-iostmt -> in_stmt | out_stmt
+assignment -> identifier = int_exp ; | identifier = char_exp ; | identifier = string_exp
+iostmt -> in_stmt ; | out_stmt ;
 in_stmt -> stdin ( identifier )
 out_stmt -> print ( identifier ) | print ( constant )
 constant -> int_ct | char_ct | string_ct
-struct_stmt -> if_stmt | while_stmt | cmp_stmt
-cmp_stmt -> { stmtlist }
-if_stmt -> if ( condition ) cmp_stmt | if ( condition ) cmp_stmt else stmt
-while_stmt -> while ( condition ) do cmp_stmt
-condition -> expression relation expression
+struct_stmt -> if_stmt | while_stmt ; | cmp_stmt ;
+if_stmt -> if condition cmp_stmt ; | if condition cmp_stmt else stmt
+while_stmt -> while condition do cmp_stmt
+condition -> ( int_exp relation int_exp )
+cmp_stmt -> { stmt_block
+stmt_block -> stmt } | stmt stmt_block
 relation -> < | <= | == | != | >= | >
 
 @startingSymbol

@@ -5,7 +5,7 @@ import components.parser.ActionType;
 import java.util.Map;
 
 public class TableRow {
-    private final ActionType action;
+    private ActionType action;
     private final Map<String, Integer> goTo;
     private int stateIndex = -1;
     private int productionIndexInList = -1;
@@ -38,5 +38,9 @@ public class TableRow {
 
     public void setProductionIndexInList(int productionIndexInList) {
         this.productionIndexInList = productionIndexInList;
+    }
+
+    public void setActionType(ActionType actionType) {
+        this.action = actionType;
     }
 }

@@ -51,7 +51,7 @@ public class Grammar {
                                     r = r.strip();
                                     return Arrays.asList(r.split(" "));
                                 }
-                        ).toList();
+                        ).collect(Collectors.toList());
                         Map<Integer, List<String>> rightHandSide = new HashMap<>();
                         for (List<String> rh : rhs) {
                             rightHandSide.put(index, rh);

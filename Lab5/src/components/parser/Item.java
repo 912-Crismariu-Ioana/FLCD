@@ -7,11 +7,14 @@ public class Item {
     private final String lhs;
     private final List<String> rhs;
     private int dotPosition;
+    private int index;
 
-    public Item(String lhs, List<String> rhs, int dotPosition) {
+    public Item(String lhs, List<String> rhs, int dotPosition, int index) {
         this.lhs = lhs;
         this.rhs = rhs;
         this.dotPosition = dotPosition;
+
+        this.index = index;
     }
 
     public String getLhs() {
@@ -69,5 +72,9 @@ public class Item {
             rhs2.add(rhs.get(i));
         stringBuilder.append(lhs).append(" -> ").append(rhs1).append('.').append(rhs2);
         return stringBuilder.toString();
+    }
+
+    public int getIndex() {
+        return index;
     }
 }

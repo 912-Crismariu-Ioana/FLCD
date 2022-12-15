@@ -1,12 +1,14 @@
 # Compute the sum of n numbers
 
+BEGIN
 my $n:int, $sum:int, $term:int, $ctr:int;
-$n = stdin();
+stdin($n);
 $sum = 0;
 $ctr = 0;
 while ($ctr < $n) do {
-    $term = stdin();
+    stdin($term);
     $sum = $sum + $term;
     $ctr = $ctr + 1;
 };
 print($sum);
+END

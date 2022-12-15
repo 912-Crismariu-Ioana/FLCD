@@ -5,7 +5,6 @@ import components.grammar.Production;
 import components.utils.Pair;
 import components.parser.table.Table;
 import components.parser.table.TableRow;
-import components.parser.tree.Node;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -49,8 +48,8 @@ public class LRZeroParser {
                     continue;
                 }
                 for (Production production : grammar.getProductionsForNonTerminal(symbol)) {
-                    for(List<String> rhs : production.getRHS().values()){
-                        Item currentItem = new Item(symbol, rhs, 0);
+                    for(var rhs : production.getRHS().entrySet()){
+                        Item currentItem = new Item(symbol, rhs.getValue(), 0, rhs.getKey());
                         if(closure.add(currentItem)){
                             changed = true;
                         }
@@ -67,7 +66,7 @@ public class LRZeroParser {
         for (Item item :state.getItems()) {
             String nonTerminal = item.getSymbolAfterTheDot();
             if (symbol.equals(nonTerminal)) {
-                Item newItem = new Item(item.getLhs(), item.getRhs(), item.getDotPosition() + 1);
+                Item newItem = new Item(item.getLhs(), item.getRhs(), item.getDotPosition() + 1, item.getIndex());
                 result.addAll(closure(newItem).getItems());
             }
         }
@@ -79,8 +78,8 @@ public class LRZeroParser {
         List<State> canonicalCollection = new ArrayList<>();
         Item firstItem = new Item("S'",
                 List.of(grammar.getStartingSymbol()),
-                0
-        );
+                0,
+                index);
         State firstState = closure(firstItem);
         firstState.setIndex(index);
         canonicalCollection.add(firstState);
@@ -127,93 +126,99 @@ public class LRZeroParser {
             TableRow tableRow = new TableRow(actionType, goTo);
             tableRow.setStateIndex(state.getIndex());
             if(actionType.equals(ActionType.REDUCE)){
-                Item toReduce = state.getItems()
-                        .stream()
-                        .filter(item -> item.getDotPosition() == item.getRhs().size()).findFirst().orElse(null);
-                //int index = grammar.getProductions().stream().collect(Collectors.toList());
+                List<Item> triggerItemsReduce = state.getItems().stream().filter(item -> item.getDotPosition() == item.getRhs().size()).collect(Collectors.toList());
+                if(triggerItemsReduce.size() > 0){
+                    Item toReduce = triggerItemsReduce.stream().min(Comparator.comparingInt(Item::getIndex)).get();
+                    for(Production production: grammar.getProductions()){
+                        if(production.getLHS().get(0).equals(toReduce.getLhs())){
+                            for(var prodRhs: production.getRHS().entrySet()){
+                                if(prodRhs.getValue().equals(toReduce.getRhs())){
+                                    tableRow.setProductionIndexInList(prodRhs.getKey());
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
             }
             table.add(tableRow);
         }
         return new Table(symbols, table);
     }
 
-//    public List<Integer> parse(List<String> word) {
-//        List<Node> nodes = new ArrayList<>();
-//        List<Pair<String, Integer>> workingStack = new ArrayList<>();
-//        List<String> remainingStack = word;
-//        List<Integer> productionStack = new ArrayList<>();
-//        Table parsingTable = getParsingTable();
-//        workingStack.add(new Pair<>("$", 0));
-//        int currentIndex = 0;
-//        while (!remainingStack.isEmpty() || !workingStack.isEmpty()) {
-//            Integer lastItemInWS = workingStack.get(workingStack.size()-1).second;
-//            if(lastItemInWS == null || lastItemInWS < 0 || lastItemInWS >= parsingTable.getTableRows().size()){
-//                throw new RuntimeException("Invalid last element in working stack!!!");
-//            }
-//            TableRow tableRow = parsingTable.getTableRows().get(lastItemInWS);
-//            switch (tableRow.getAction()) {
-//                case ActionType.SHIFT:
-//                    if(remainingStack.isEmpty()) {
-//                        throw new RuntimeException("Action is shift but nothing else is left in the remaining stack");
-//                    }
-//                    String token = remainingStack.get(0);
-//                    Map<String, Integer> goTo = tableRow.getGoTo();
-//                    if(!goTo.containsKey(token)) {
-//                        throw new RuntimeException("Invalid symbol \"$token\" for goto of state ${workingStack.last().second}");
-//                    }
-//
-//                    int value = goTo.get(token);
-//                    workingStack.add(
-//                            new Pair<>(
-//                                    token,
-//                                    value
-//                            )
-//                    );
-//
-//                    remainingStack.remove(0);
-//                    break;
-//                case ActionType.ACCEPT:
-//                    return productionStack;
-//
-//                case ActionType.REDUCE:
-//                    Production productionToReduceTo = grammar.getProductions().stream().filter(production ->
-//                            production.getIndex() == tableRow.getProductionIndexInList()).findFirst().orElse(null);
-//
-//                    String firstElement = productionToReduceTo.getRHS().get(0);
-//
-//                    int parentIndex = currentIndex++;
-//                    var lastIndex = -1;
-//                    for (int j = 0; j <= productionToReduceTo.getRHS().size(); ++j) {
-//                        workingStack.remove(workingStack.size() - 1);
-//                        workingStack.removeLast();
-//                        val lastElement = treeStack.removeLast()
-//                        parsingTree.add(
-//                                ParsingTreeRow(
-//                                        lastElement.second,
-//                                        lastElement.first,
-//                                        parentIndex,
-//                                        lastIndex
-//                                )
-//                        )
-//                        lastIndex = lastElement.second
-//                    }
-//                    treeStack.add(Pair(productionToReduceTo.first, parentIndex))
-//                    val previous = workingStack.last()
-//                    workingStack.add(
-//                            Pair(
-//                                    productionToReduceTo.first,
-//                                    parsingTable.tableRow[previous.second]!!.goto!![productionToReduceTo.first]!!
-//                        )
-//                    )
-//                    productionStack.add(0, tableValue.reductionIndex)
-//
-//                }
-//                else -> throw Exception(tableValue.action.toString())
-//            }
-//        }
-//        throw Exception("How did you even get here?")
-//    }
+    public void parse() {
+        System.out.println(getParsingTable());
+    }
 
+    public List<Integer> parser(List<String> pif) {
+        parse();
+        List<Pair<String, Integer>> workingStack = new ArrayList<>();
+        List<String> inputStack = new ArrayList<>(pif);
+        List<Integer> outputBand = new ArrayList<>();
+        Table parsingTable = getParsingTable();
+        workingStack.add(new Pair<>("$", 0));
+        while (!inputStack.isEmpty() || !workingStack.isEmpty()) {
+            Integer lastItemInWS = workingStack.get(workingStack.size() - 1).second;
+            if (lastItemInWS == null || lastItemInWS < 0 || lastItemInWS >= parsingTable.getTableRows().size()) {
+                throw new RuntimeException("Invalid last element in working stack!!!");
+            }
+            TableRow tableRow = parsingTable.getTableRows().get(lastItemInWS);
+            switch (tableRow.getAction()) {
+                case SHIFT:
+                    if (inputStack.isEmpty()) {
+                        throw new RuntimeException("Action is shift but nothing else is left in the remaining stack");
+                    }
+                    String token = inputStack.get(0);
+                    Map<String, Integer> goTo = tableRow.getGoTo();
+                    if (!goTo.containsKey(token)) {
+                        throw new RuntimeException("Invalid symbol " + token + " for goto of state " + lastItemInWS);
+                    }
 
+                    int value = goTo.get(token);
+                    workingStack.add(
+                            new Pair<>(
+                                    token,
+                                    value
+                            )
+                    );
 
+                    inputStack.remove(0);
+                    break;
+                case ACCEPT:
+                    Collections.reverse(outputBand);
+                    return outputBand;
+
+                case REDUCE:
+                    for (Production prods : grammar.getProductions()) {
+                        for (var prod : prods.getRHS().entrySet()) {
+                            if (prod.getKey().equals(tableRow.getProductionIndexInList())) {
+                                List<String> rhs = prod.getValue();
+                                String firstSymbol = rhs.get(0);
+                                int nrOccurences = Collections.frequency(rhs, firstSymbol);
+                                int index = -1;
+                                for (int i = workingStack.size() - 1; i >= 0; i--) {
+                                    if (workingStack.get(i).first.equals(firstSymbol)) {
+                                        nrOccurences--;
+                                        if(nrOccurences == 0){
+                                            index = i;
+                                            break;
+                                        }
+                                    }
+                                }
+                                Integer prevState = workingStack.get(index - 1).second;
+                                workingStack = workingStack.subList(0, index);
+                                String reductionResult = prods.getLHS().get(0);
+                                Integer goToResult = parsingTable.getTableRows().get(prevState).getGoTo().get(reductionResult);
+                                workingStack.add(new Pair<>(reductionResult, goToResult));
+                                outputBand.add(tableRow.getProductionIndexInList());
+                            }
+                        }
+                    }
+                    break;
+                default:
+                    throw new RuntimeException("How did you even get here?");
+            }
+        }
+        return null;
+    }
 }

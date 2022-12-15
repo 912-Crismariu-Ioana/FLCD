@@ -11,6 +11,7 @@
 >=
 >
 =
+.
 
 @separators
 (
@@ -37,3 +38,5 @@ print
 stdin
 while
 do
+BEGIN
+END

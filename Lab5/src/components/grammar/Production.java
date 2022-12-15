@@ -35,8 +35,8 @@ public class Production {
 
     @Override
     public String toString(){
-        return  String.join("",LHS) + " -> " + RHS.values().stream()
-                .map(strings -> String.join(" ", strings) + "(" + strings + ")")
+        return  String.join("",LHS) + " -> " + RHS.entrySet().stream()
+                .map(strings -> String.join(" ", strings.getValue()) + " (" + strings.getKey() + ")")
                 .reduce((partialString, element) -> partialString + " | " + element)
                 .orElse("epsilon");
     }

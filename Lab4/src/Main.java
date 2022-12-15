@@ -15,6 +15,10 @@ public class Main {
                 "resources/output/PIF3.out",
                 "resources/output/ST3.out");
         ps3.scan();
+        ProgramScanner ps4 = new ProgramScanner("resources/input/p4.mj",
+                "resources/output/PIF4.out",
+                "resources/output/ST4.out");
+        ps4.scan();
         ProgramScanner psErr = new ProgramScanner("resources/input/p1err.mj",
                 "resources/output/PIF1err.out",
                 "resources/output/ST1err.out");

@@ -1,11 +1,11 @@
 # Compute the max of 3 numbers
 
 # Identifier is missing preceding sigil
+BEGIN
 my n1:int, $n2:int, $n3:int, $max:int;
-$n1 = stdin();
-$n2 = stdin();
-$n3 = stdin();
-$max = $n1;
+stdin($n1);
+stdin($n2);
+stdin($n3);
 if ($n2 > $max) {
     $max = $n2;
 };
@@ -15,3 +15,4 @@ if ($n3 > $max) {
 # String constant cannot contain an identifier mark (the sigil)
 print("The max number is $n1");
 print($max);
+END
