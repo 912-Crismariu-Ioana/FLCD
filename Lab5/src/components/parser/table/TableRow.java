@@ -39,8 +39,4 @@ public class TableRow {
     public void setProductionIndexInList(int productionIndexInList) {
         this.productionIndexInList = productionIndexInList;
     }
-
-    public void setActionType(ActionType actionType) {
-        this.action = actionType;
-    }
 }

@@ -165,6 +165,18 @@ public class Grammar {
         return productions;
     }
 
+
+    /**
+     * Returns the production having the specified index
+     * Note that due to the unique way we store productions, the result will be a production
+     * with the following properties
+     * index: the index of the queried production is the same as the provided index
+     * lhs: the lhs of the queried production is the same as the original lhs
+     * rhs: the rhs of the queried production contains only the elements of the original production
+     * at the given index
+     * @param index the index of the production
+     * @return the production if the given index is valid, null otherwise
+     */
     public Production getProductionByIndex(int index){
         Production production = productions.stream()
                 .filter(prod -> prod.getRHS().containsKey(index))

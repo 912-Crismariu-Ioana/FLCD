@@ -34,10 +34,17 @@ public class LRZeroParser {
     }
 
 
+    /**
+     * Computes the closure for a given item
+     * @param item parsing item
+     * @return a new state (set of parsing items)
+     */
     private State closure(Item item){
         Set<Item> closure = new HashSet<>();
+        // Add starting item
         closure.add(item);
 
+        // Boolean variable used to track changes to the set of items
         boolean changed = true;
 
         do {
@@ -48,6 +55,9 @@ public class LRZeroParser {
                 if(!grammar.getNonTerminals().contains(symbol)){
                     continue;
                 }
+
+                // We have a non-terminal after the dot => create new parsing items for each of its productions
+                // Add them to the canonical collection and mark the change
                 for (Production production : grammar.getProductionsForNonTerminal(symbol)) {
                     for(var rhs : production.getRHS().entrySet()){
                         Item currentItem = new Item(symbol, rhs.getValue(), 0, rhs.getKey());
@@ -62,21 +72,37 @@ public class LRZeroParser {
         return new State(closure);
     }
 
-    private State goTo(State state, String symbol) {
+    /**
+     * @param state the initial state before the transition
+     * @param startingSymbol the symbol used in the transition
+     * @return the generated state after the transition
+     */
+    private State goTo(State state, String startingSymbol) {
         Set<Item> result = new HashSet<>();
         for (Item item :state.getItems()) {
-            String nonTerminal = item.getSymbolAfterTheDot();
-            if (symbol.equals(nonTerminal)) {
-                Item newItem = new Item(item.getLhs(), item.getRhs(), item.getDotPosition() + 1, item.getIndex());
+            // Generate a new item for each item in the original state, but advance the dot position
+            // Compute its closure and add the result to the set of items of the new generated state
+            String symbol = item.getSymbolAfterTheDot();
+            if (startingSymbol.equals(symbol)) {
+                Item newItem = new Item(item.getLhs(),
+                        item.getRhs(),
+                        item.getDotPosition() + 1,
+                        item.getIndex());
                 result.addAll(closure(newItem).getItems());
             }
         }
         return new State(result);
     }
 
+    /**
+     * Retrieve the entire canonical collection used in constructing the parsing table
+     * @return set of states making up the canonical collection
+     */
     private List<State> getCanonicalCollection(){
+        // States are indexed so that we're able to refer to them in the parsing table
         int index = 0;
         List<State> canonicalCollection = new ArrayList<>();
+        // First item is based on the first production in the enhanced grammar
         Item firstItem = new Item("S'",
                 List.of(grammar.getStartingSymbol()),
                 0,
@@ -85,9 +111,13 @@ public class LRZeroParser {
         firstState.setIndex(index);
         canonicalCollection.add(firstState);
         index++;
+
+        // Set containing all the symbols in the grammar
         Set<String> symbols = new HashSet<>();
         symbols.addAll(grammar.getNonTerminals());
         symbols.addAll(grammar.getTerminals());
+
+        // Boolean variable used to track changes to the collection
         boolean changed = true;
         while(changed) {
             changed = false;
@@ -95,6 +125,7 @@ public class LRZeroParser {
             for (State state : states) {
                 for (String symbol : symbols) {
                     State newState = goTo(state, symbol);
+                    // Filter out states for which performing goto doesn't yield meaningful results
                     if (newState.getItems().size() > 0) {
                         if (!canonicalCollection.contains(newState)) {
                             newState.setIndex(index);
@@ -102,6 +133,8 @@ public class LRZeroParser {
                             index++;
                             changed = true;
                         } else {
+                            // We use this to link already generated states to their initial state
+                            // e.g. the state before performing goto
                             int stateIndex = canonicalCollection.indexOf(newState);
                             state.addReachableState(symbol, stateIndex);
                         }
