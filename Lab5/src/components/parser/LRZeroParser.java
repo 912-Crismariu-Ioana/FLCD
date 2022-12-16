@@ -294,6 +294,7 @@ public class LRZeroParser {
                                 String reductionResult = prods.getLHS().get(0);
                                 Integer goToResult = parsingTable.getTableRows().get(prevState).getGoTo().get(reductionResult);
                                 workingStack.add(new Pair<>(reductionResult, goToResult));
+
                                 Pair<String, Integer> lElement = treeStack.get(treeStack.size() - 1);
                                 treeStack.remove(treeStack.size() - 1);
                                 parsingTree.add(
