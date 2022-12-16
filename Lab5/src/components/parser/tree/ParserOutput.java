@@ -3,6 +3,10 @@ package components.parser.tree;
 import components.grammar.Grammar;
 import components.grammar.Production;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +53,41 @@ public class ParserOutput {
         }
     }
 
-    public void writeToFile(){
+    public void writeToFile(File outputFile) {
+        FileWriter outputWriter = null;
+        try {
+            outputWriter = new FileWriter(outputFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String leftAlignFormatIndex = "| %-5s |";
+        String leftAlignFormatInformation = "| %-20s |";
+        String leftAlignFormatParent = "| %-6s |";
+        String leftAlignFormatRightSibling = "| %-10s ";
+        try {
+            assert outputWriter != null;
+            outputWriter.write(String.format(leftAlignFormatIndex, "Index"));
+            outputWriter.write(String.format(leftAlignFormatInformation, "Information"));
+            outputWriter.write(String.format(leftAlignFormatParent, "Parent"));
+            outputWriter.write(String.format(leftAlignFormatRightSibling, "Right Sibling"));
+            outputWriter.write("\n");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        for(ParsingTreeRow parseTreeNode : parseTree){
+            try {
+                outputWriter.write(parseTreeNode.toString());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        try {
+            outputWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void printParseTree(){
@@ -57,6 +95,4 @@ public class ParserOutput {
             System.out.println(parseTreeNode);
         }
     }
-
-
 }

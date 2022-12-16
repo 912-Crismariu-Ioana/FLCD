@@ -4,6 +4,8 @@ import components.parser.tree.ParserOutput;
 import components.parser.tree.ParsingTreeRow;
 import components.utils.PIFTokenizer;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 public class Main {
@@ -34,6 +36,11 @@ public class Main {
         ParserOutput parserOutput1 = new ParserOutput(outputBand1, grammar);
         parserOutput1.getParseTree();
         parserOutput1.printParseTree();
+
+        String fileName = "output.out";
+        File dir = new File ("resources");
+        File actualFile = new File (dir, fileName);
+        parserOutput1.writeToFile(actualFile);
 
         List<Integer> outputBand2 = lrZero.parserOutputBand(PIFTokenizer.tokenizePIFFile("resources/PIF2.out"));
         for (var element : outputBand2)

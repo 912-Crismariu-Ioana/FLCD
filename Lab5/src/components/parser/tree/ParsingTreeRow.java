@@ -1,16 +1,18 @@
 package components.parser.tree;
 
+import components.parser.ActionType;
+
 public class ParsingTreeRow {
     private int index;
     private String info;
     private int parent;
-    private int rightSibling;
+    private int leftSibling;
 
-    public ParsingTreeRow(int index, String info, int parent, int rightSibling) {
+    public ParsingTreeRow(int index, String info, int parent, int leftSibling) {
         this.index = index;
         this.info = info;
         this.parent = parent;
-        this.rightSibling = rightSibling;
+        this.leftSibling = leftSibling;
     }
 
     public int getIndex() {
@@ -37,21 +39,28 @@ public class ParsingTreeRow {
         this.parent = parent;
     }
 
-    public int getRightSibling() {
-        return rightSibling;
+    public int getLeftSibling() {
+        return leftSibling;
     }
 
-    public void setRightSibling(int rightSibling) {
-        this.rightSibling = rightSibling;
+    public void setLeftSibling(int leftSibling) {
+        this.leftSibling = leftSibling;
     }
 
     @Override
-    public String toString() {
-        return "ParsingTreeRow{" +
-                "index=" + index +
-                ", info='" + info + '\'' +
-                ", parent=" + parent +
-                ", rightSibling=" + rightSibling +
-                '}';
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+        String leftAlignFormatIndex = "| %-5s |";
+        String leftAlignFormatInformation = "| %-20s |";
+        String leftAlignFormatParent = "| %-6s |";
+        String leftAlignFormatRightSibling = "| %-10s ";
+
+        sb.append(String.format(leftAlignFormatIndex, this.index));
+        sb.append(String.format(leftAlignFormatInformation, this.info));
+        sb.append(String.format(leftAlignFormatParent, this.parent));
+        sb.append(String.format(leftAlignFormatRightSibling, this.leftSibling));
+        sb.append("\n");
+
+        return sb.toString();
     }
 }
