@@ -160,7 +160,7 @@ public class LRZeroParser {
         while (!inputStack.isEmpty() || !workingStack.isEmpty()) {
             Integer lastItemInWS = workingStack.get(workingStack.size() - 1).second;
             if (lastItemInWS == null || lastItemInWS < 0 || lastItemInWS >= parsingTable.getTableRows().size()) {
-                throw new RuntimeException("Invalid last element in working stack!!!");
+                throw new RuntimeException("Invalid last element in working stack");
             }
             TableRow tableRow = parsingTable.getTableRows().get(lastItemInWS);
             switch (tableRow.getAction()) {
@@ -175,12 +175,7 @@ public class LRZeroParser {
                     }
 
                     int value = goTo.get(token);
-                    workingStack.add(
-                            new Pair<>(
-                                    token,
-                                    value
-                            )
-                    );
+                    workingStack.add(new Pair<>(token, value));
 
                     inputStack.remove(0);
                     break;
@@ -208,7 +203,10 @@ public class LRZeroParser {
                                 Integer prevState = workingStack.get(index - 1).second;
                                 workingStack = workingStack.subList(0, index);
                                 String reductionResult = prods.getLHS().get(0);
-                                Integer goToResult = parsingTable.getTableRows().get(prevState).getGoTo().get(reductionResult);
+                                Integer goToResult = parsingTable.getTableRows()
+                                        .get(prevState)
+                                        .getGoTo()
+                                        .get(reductionResult);
                                 workingStack.add(new Pair<>(reductionResult, goToResult));
                                 outputBand.add(tableRow.getProductionIndexInList());
                             }
@@ -216,7 +214,7 @@ public class LRZeroParser {
                     }
                     break;
                 default:
-                    throw new RuntimeException("How did you even get here?");
+                    throw new RuntimeException("Wrong action type");
             }
         }
         return null;

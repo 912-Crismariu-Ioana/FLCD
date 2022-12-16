@@ -17,31 +17,23 @@ public class State {
     public ActionType getNextAction(){
         ActionType actionType = ActionType.ERROR;
 
-
         if(items.stream().filter(item->item.getLhs().equals("S'") &&
            item.getDotPosition() == item.getRhs().size()).count() == 1){
             return ActionType.ACCEPT;
         }
 
-        Item triggerItemShift = items.stream().filter(item -> item.getDotPosition() < item.getRhs().size()).findFirst().orElse(null);
+        Item triggerItemShift = items.stream()
+                .filter(item -> item.getDotPosition() < item.getRhs().size())
+                .findFirst().orElse(null);
 
         if(triggerItemShift != null){
-             actionType = ActionType.SHIFT;
+             return ActionType.SHIFT;
         }
 
         List<Item> triggerItemsReduce = items.stream().filter(item -> item.getDotPosition() == item.getRhs().size()).collect(Collectors.toList());
 
         if(triggerItemsReduce.size() > 0){
-            actionType = ActionType.REDUCE;
-        }
-
-        if(triggerItemShift != null && triggerItemsReduce.size() > 0){
-            String commonLHS = triggerItemShift.getLhs();
-            for(Item item: triggerItemsReduce){
-                if(item.getLhs().equals(commonLHS)){
-                    return ActionType.SHIFT;
-                }
-            }
+            return ActionType.REDUCE;
         }
 
         return actionType;

@@ -1,5 +1,5 @@
 @nonTerminals
-program stmtlist stmt simple_stmt decl_stmt arr_type type decl_list int_exp operation string_exp char_exp assignment iostmt in_stmt out_stmt constant struct_stmt cmp_stmt if_stmt while_stmt condition relation stmt_block
+program stmtlist stmt simple_stmt decl_stmt arr_type type decl_list int_exp simple_int_exp int_exp_with_paran operation string_exp simple_string_exp char_exp expression assignment iostmt in_stmt out_stmt constant struct_stmt cmp_stmt if_stmt while_stmt condition relation stmt_block
 
 @terminals
 BEGIN . ; my arr [ ] int char string : , ( ) + - * / % = stdin print { } if else while do < <= != == >= > string_ct char_ct int_ct identifier 1 2 3 4 5 6 7 8 9 END
@@ -13,19 +13,20 @@ decl_stmt -> my decl_list
 decl_list -> identifier : type ; | identifier : type , decl_list
 arr_type -> arr [ int_ct ]
 type -> int | char | string | arr_type
-int_exp -> int_ct | identifier | int_exp operation int_exp | ( int_exp operation int_exp )
+constant -> int_ct | char_ct | string_ct
+simple_int_exp -> int_ct operation int_ct | identifier operation int_ct | int_ct operation identifier | identifier operation identifier
+int_exp -> simple_int_exp | ( simple_int_exp ) operation ( int_exp ) | int_ct operation ( int_exp ) | identifier operation ( int_exp )
 operation -> + | - | * | / | %
-string_exp -> string_ct ; | identifier ; | string_ct . string_exp
-char_exp -> char_ct | identifier
-assignment -> identifier = int_exp ; | identifier = char_exp ; | identifier = string_exp
+simple_string_exp -> string_ct . string_ct | identifier . identifier | identifier . string_ct | string_ct . identifier
+string_exp -> simple_string_exp ; | simple_string_exp . string_exp
+assignment -> identifier = identifier ; | identifier = int_ct ; | identifier = char_ct ; | identifier = string_ct ; | identifier = string_exp | identifier = int_exp ;
 iostmt -> in_stmt ; | out_stmt ;
 in_stmt -> stdin ( identifier )
 out_stmt -> print ( identifier ) | print ( constant )
-constant -> int_ct | char_ct | string_ct
 struct_stmt -> if_stmt | while_stmt ; | cmp_stmt ;
 if_stmt -> if condition cmp_stmt ; | if condition cmp_stmt else stmt
 while_stmt -> while condition do cmp_stmt
-condition -> ( int_exp relation int_exp )
+condition -> ( int_ct relation identifier ) | ( identifier relation int_ct ) | ( identifier relation identifier )
 cmp_stmt -> { stmt_block
 stmt_block -> stmt } | stmt stmt_block
 relation -> < | <= | == | != | >= | >

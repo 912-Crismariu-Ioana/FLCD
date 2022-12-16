@@ -5,13 +5,15 @@
 # Variable identifiers are always preceded by a sigil
 
 BEGIN
-my $n1:arr[4], $n2:string, $n3:string, $max:char;
+my $n1:arr[4], $n2:string, $n3:string, $max:char, $test:int;
 stdin($n1);
 $n2 = "hello";
 $n3 = "world";
 $max = 'x';
 if ($n2 == $n3) {
     print($max);
+    print(3);
+    $test = 5 + (3 + (2 * (5 + 7)));
 } else if ($n3 < $n3) {
     $n2 = "friend" . $n2;
     print($n2);
