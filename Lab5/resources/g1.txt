@@ -1,12 +1,11 @@
 @nonTerminals
-S A
+S
 
 @terminals
 a b c
 
 @productions
-S -> a A
-A -> b A | c
+S -> a S | a S b S | c
 
 @startingSymbol
 S

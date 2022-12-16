@@ -2,7 +2,7 @@ package components.parser;
 
 import components.grammar.Grammar;
 import components.grammar.Production;
-import components.parser.treev2.ParsingTreeRow;
+import components.parser.tree.ParsingTreeRow;
 import components.utils.Pair;
 import components.parser.table.Table;
 import components.parser.table.TableRow;
@@ -114,7 +114,6 @@ public class LRZeroParser {
 
     public Table getParsingTable(){
         List<State> canonicalCollection = getCanonicalCollection();
-        System.out.println(canonicalCollection);
         List<TableRow> table = new ArrayList<>();
         Set<String> symbols = new HashSet<>();
         symbols.addAll(grammar.getNonTerminals());
@@ -147,12 +146,7 @@ public class LRZeroParser {
         return new Table(symbols, table);
     }
 
-    public void parse() {
-        System.out.println(getParsingTable());
-    }
-
     public List<Integer> parserOutputBand(List<String> pif) {
-        parse();
         List<Pair<String, Integer>> workingStack = new ArrayList<>();
         List<String> inputStack = new ArrayList<>(pif);
         List<Integer> outputBand = new ArrayList<>();
@@ -181,6 +175,9 @@ public class LRZeroParser {
                     inputStack.remove(0);
                     break;
                 case ACCEPT:
+                    if(!inputStack.isEmpty()){
+                        throw new RuntimeException("There are unprocessed symbols");
+                    }
                     Collections.reverse(outputBand);
                     return outputBand;
 
@@ -222,7 +219,6 @@ public class LRZeroParser {
     }
 
     public List<ParsingTreeRow> parserParseTree(List<String> pif) {
-        parse();
         List<Pair<String, Integer>> workingStack = new ArrayList<>();
         List<String> inputStack = new ArrayList<>(pif);
         List<Integer> outputBand = new ArrayList<>();

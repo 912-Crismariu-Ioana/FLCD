@@ -1,4 +1,4 @@
-package components.parser.treev2;
+package components.parser.tree;
 
 public class ParsingTreeRow {
     private int index;
@@ -43,5 +43,15 @@ public class ParsingTreeRow {
 
     public void setRightSibling(int rightSibling) {
         this.rightSibling = rightSibling;
+    }
+
+    @Override
+    public String toString() {
+        return "ParsingTreeRow{" +
+                "index=" + index +
+                ", info='" + info + '\'' +
+                ", parent=" + parent +
+                ", rightSibling=" + rightSibling +
+                '}';
     }
 }

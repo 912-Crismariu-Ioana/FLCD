@@ -164,4 +164,19 @@ public class Grammar {
     public List<Production> getProductions() {
         return productions;
     }
+
+    public Production getProductionByIndex(int index){
+        Production production = productions.stream()
+                .filter(prod -> prod.getRHS().containsKey(index))
+                .findFirst().orElse(null);
+        if(production == null){
+            return null;
+        }
+        Production newProd = new Production();
+        newProd.setLHS(production.getLHS());
+        Map<Integer, List<String>> rhs = new HashMap<>();
+        rhs.put(index, production.getRHS().get(index));
+        newProd.setRHS(rhs);
+        return newProd;
+    }
 }
