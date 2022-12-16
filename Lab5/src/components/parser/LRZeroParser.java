@@ -2,6 +2,7 @@ package components.parser;
 
 import components.grammar.Grammar;
 import components.grammar.Production;
+import components.parser.treev2.ParsingTreeRow;
 import components.utils.Pair;
 import components.parser.table.Table;
 import components.parser.table.TableRow;
@@ -150,7 +151,7 @@ public class LRZeroParser {
         System.out.println(getParsingTable());
     }
 
-    public List<Integer> parser(List<String> pif) {
+    public List<Integer> parserOutputBand(List<String> pif) {
         parse();
         List<Pair<String, Integer>> workingStack = new ArrayList<>();
         List<String> inputStack = new ArrayList<>(pif);
@@ -215,6 +216,101 @@ public class LRZeroParser {
                     break;
                 default:
                     throw new RuntimeException("Wrong action type");
+            }
+        }
+        return null;
+    }
+
+    public List<ParsingTreeRow> parserParseTree(List<String> pif) {
+        parse();
+        List<Pair<String, Integer>> workingStack = new ArrayList<>();
+        List<String> inputStack = new ArrayList<>(pif);
+        List<Integer> outputBand = new ArrayList<>();
+        Table parsingTable = getParsingTable();
+        workingStack.add(new Pair<>("$", 0));
+
+        List<ParsingTreeRow> parsingTree = new ArrayList<>();
+        List<Pair<String, Integer>> treeStack = new ArrayList<>();
+        int currentIndex = 0;
+
+        while (!inputStack.isEmpty() || !workingStack.isEmpty()) {
+            Integer lastItemInWS = workingStack.get(workingStack.size() - 1).second;
+            if (lastItemInWS == null || lastItemInWS < 0 || lastItemInWS >= parsingTable.getTableRows().size()) {
+                throw new RuntimeException("Invalid last element in working stack!!!");
+            }
+            TableRow tableRow = parsingTable.getTableRows().get(lastItemInWS);
+            switch (tableRow.getAction()) {
+                case SHIFT:
+                    if (inputStack.isEmpty()) {
+                        throw new RuntimeException("Action is shift but nothing else is left in the remaining stack");
+                    }
+                    String token = inputStack.get(0);
+                    Map<String, Integer> goTo = tableRow.getGoTo();
+                    if (!goTo.containsKey(token)) {
+                        throw new RuntimeException("Invalid symbol " + token + " for goto of state " + lastItemInWS);
+                    }
+
+                    int value = goTo.get(token);
+                    workingStack.add(
+                            new Pair<>(
+                                    token,
+                                    value
+                            )
+                    );
+
+                    inputStack.remove(0);
+                    treeStack.add(new Pair<>(token, currentIndex++));
+                    break;
+                case ACCEPT:
+                    Collections.reverse(outputBand);
+                    Pair<String, Integer> lastElement = treeStack.get(treeStack.size() - 1);
+                    treeStack.remove(treeStack.size() - 1);
+                    parsingTree.add(new ParsingTreeRow(lastElement.second, lastElement.first, -1, -1));
+                    return parsingTree;
+
+                case REDUCE:
+                    int parentIndex = currentIndex++;
+                    int lastIndex = -1;
+                    for (Production prods : grammar.getProductions()) {
+                        for (var prod : prods.getRHS().entrySet()) {
+                            if (prod.getKey().equals(tableRow.getProductionIndexInList())) {
+                                List<String> rhs = prod.getValue();
+                                String firstSymbol = rhs.get(0);
+                                int nrOccurences = Collections.frequency(rhs, firstSymbol);
+                                int index = -1;
+                                for (int i = workingStack.size() - 1; i >= 0; i--) {
+                                    if (workingStack.get(i).first.equals(firstSymbol)) {
+                                        nrOccurences--;
+                                        if(nrOccurences == 0){
+                                            index = i;
+                                            break;
+                                        }
+                                    }
+                                }
+                                Integer prevState = workingStack.get(index - 1).second;
+                                workingStack = workingStack.subList(0, index);
+                                String reductionResult = prods.getLHS().get(0);
+                                Integer goToResult = parsingTable.getTableRows().get(prevState).getGoTo().get(reductionResult);
+                                workingStack.add(new Pair<>(reductionResult, goToResult));
+
+                                Pair<String, Integer> lElement = treeStack.get(treeStack.size() - 1);
+                                treeStack.remove(treeStack.size() - 1);
+                                parsingTree.add(
+                                        new ParsingTreeRow(
+                                                lElement.second,
+                                                lElement.first,
+                                                parentIndex,
+                                                lastIndex
+                                        )
+                                );
+
+                                outputBand.add(tableRow.getProductionIndexInList());
+                            }
+                        }
+                    }
+                    break;
+                default:
+                    throw new RuntimeException("How did you even get here?");
             }
         }
         return null;
