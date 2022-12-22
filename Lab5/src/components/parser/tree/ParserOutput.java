@@ -3,7 +3,6 @@ package components.parser.tree;
 import components.grammar.Grammar;
 import components.grammar.Production;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -13,40 +12,50 @@ import java.util.List;
 public class ParserOutput {
     private Grammar grammar;
 
-    public List<ParsingTreeRow> getParseTree() {
-        return parseTree;
-    }
-
     private List<ParsingTreeRow> parseTree = new ArrayList<>();
 
     public ParserOutput(List<Integer> productionString, Grammar grammar){
         this.grammar = grammar;
-        transforParserOutput(productionString);
+        generateParseTree(productionString);
     }
 
-    public void transforParserOutput(List<Integer> productionString){
+
+    /**
+     * Turns the result of analysis (list of used productions) into a parsing tree
+     * @param productionList list of the indexes of the productions used in analysis, in order
+     */
+    public void generateParseTree(List<Integer> productionList){
+        // Index in parse tree
         int index = 0;
+        // Index of the production from the productionList
         int productionIndex = 0;
         List<Integer> nonTerminalsStack = new ArrayList<>();
+        // Add the root
         parseTree.add(new ParsingTreeRow(index, grammar.getStartingSymbol(), -1, -1));
+        // Non-terminals => parent nodes,
+        // We need to maintain a separate stack to keep track of their indexes in the parse tree
         nonTerminalsStack.add(index);
         index++;
         while(!nonTerminalsStack.isEmpty()){
             int parentIndex = nonTerminalsStack.remove(nonTerminalsStack.size() - 1);
-            int productionNumber = productionString.get(productionIndex++);
+            // Get current production
+            int productionNumber = productionList.get(productionIndex++);
             Production production = grammar.getProductionByIndex(productionNumber);
             List<String> rhs  = production.getRHS().get(productionNumber);
+            // For each child node, link it to its parent and left sibling and add it to the tree
             int leftSiblingIndex = 0;
             List<Integer> nonTerminals = new ArrayList<>();
             for(String rh : rhs){
                 parseTree.add(new ParsingTreeRow(index, rh, parentIndex, leftSiblingIndex));
                 leftSiblingIndex = index;
                 if(grammar.getNonTerminals().contains(rh)){
+                    // New nonTerminal, add to stack
                     nonTerminals.add(index);
                 }
                 index++;
             }
             List<Integer> newStack = new ArrayList<>();
+            // Add old stack and new stack elems
             newStack.addAll(nonTerminalsStack);
             newStack.addAll(nonTerminals);
             nonTerminalsStack = newStack;
@@ -92,7 +101,7 @@ public class ParserOutput {
 
     public void printParseTree(){
         for(ParsingTreeRow parseTreeNode : parseTree){
-            System.out.println(parseTreeNode);
+            System.out.print(parseTreeNode);
         }
     }
 }

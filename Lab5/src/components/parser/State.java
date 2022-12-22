@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class State {
+    // Index/Number of the state
     private int index = -1;
 
     private final Set<Item> items;
@@ -22,6 +23,9 @@ public class State {
             return ActionType.ACCEPT;
         }
 
+        // SHIFT-REDUCE conflicts are solved by favoring shifts
+
+        // Item that triggers a shift action
         Item triggerItemShift = items.stream()
                 .filter(item -> item.getDotPosition() < item.getRhs().size())
                 .findFirst().orElse(null);
@@ -30,6 +34,9 @@ public class State {
              return ActionType.SHIFT;
         }
 
+        // REDUCE-REDUCE conflicts are solved when building the parsing table
+
+        // Items that trigger a reduce action
         List<Item> triggerItemsReduce = items.stream().filter(item -> item.getDotPosition() == item.getRhs().size()).collect(Collectors.toList());
 
         if(triggerItemsReduce.size() > 0){
